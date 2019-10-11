@@ -1,0 +1,6 @@
+[Unit]
+Description=Run MagnumPI_Bot service
+
+[Service]
+Type=simple
+ExecStart=python /home/erich/nfs/starwars-dot-gif/twitter_bot.py

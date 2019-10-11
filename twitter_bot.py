@@ -1,7 +1,7 @@
 import base64
 import json
 import requests
-import ConfigParser
+import configparser
 import random
 import os
 import time
@@ -12,10 +12,10 @@ from base64 import b64encode
 from makeGifs import makeGif, check_config
 
 
-config = ConfigParser.ConfigParser()
-config.read("config.cfg")
+config = configparser.ConfigParser()
+config.read("/home/erich/nfs/starwars-dot-gif/config.cfg")
 config.sections()
-slugs = check_config("config.cfg")[3]
+slugs = check_config("/home/erich/nfs/starwars-dot-gif/config.cfg")[3]
 
 CLIENT_ID = config.get("imgur", "client_id")
 API_KEY = config.get("imgur", "api_key")
@@ -31,7 +31,8 @@ while True:
     while True:
         try:
             # you can set many more options, check the makeGif-function
-            quote = makeGif(random.choice(slugs))
+            quote, title = makeGif(random.choice(slugs))
+            title = ''.join(title.split(':')[1])
             quote = ' '.join(quote)
         except:
             print('something went wrong during gif-generation')
@@ -40,33 +41,33 @@ while True:
             break
 
     # first pass reduce the amount of colors
-    if(os.path.getsize('star_wars.gif') > 5242880):
+    if(os.path.getsize('/home/erich/nfs/starwars-dot-gif/random_gif.gif') > 5242880):
         subprocess.call(['convert',
-                         'star_wars.gif',
+                         'random_gif.gif',
                          '-layers',
                          'optimize',
                          '-colors',
                          '128',
                          '-loop',
                          '0',
-                         'star_wars.gif'])
+                         'random_gif.gif'])
 
     # second pass reduce the amount of colors
-    if(os.path.getsize('star_wars.gif') > 5242880):
+    if(os.path.getsize('/home/erich/nfs/starwars-dot-gif/random_gif.gif') > 5242880):
         subprocess.call(['convert',
-                         'star_wars.gif',
+                         'random_gif.gif',
                          '-layers',
                          'optimize',
                          '-colors',
                          '64',
                          '-loop',
                          '0',
-                         'star_wars.gif'])
+                         'random_gif.gif'])
 
     # other passes reduce the size
-    while(os.path.getsize('star_wars.gif') > 5242880):
+    while(os.path.getsize('/home/erich/nfs/starwars-dot-gif/random_gif.gif') > 5242880):
         subprocess.call(['convert',
-                         'star_wars.gif',
+                         'random_gif.gif',
                          '-resize',
                          '90%',
                          '-coalesce',
@@ -74,7 +75,7 @@ while True:
                          'optimize',
                          '-loop',
                          '0',
-                         'star_wars.gif'])
+                         'random_gif.gif'])
 
     try:
         response = requests.post(
@@ -82,9 +83,9 @@ while True:
             headers=headers,
             data={
                 'key': API_KEY,
-                'image': b64encode(open('star_wars.gif', 'rb').read()),
+                'image': b64encode(open('/home/erich/nfs/starwars-dot-gif/random_gif.gif', 'rb').read()),
                 'type': 'base64',
-                'name': 'star_wars.gif',
+                'name': 'random_gif.gif',
                 'title': 'Star Wars Dot Gif'
             }
         )
@@ -100,9 +101,9 @@ while True:
         continue
 
     twitter = Twython(APP_KEY, APP_SECRET, OAUTH_TOKEN, OAUTH_TOKEN_SECRET)
-
+    time.sleep(10)
     # upload media
-    gif = open('star_wars.gif', 'rb')
+    gif = open('/home/erich/nfs/starwars-dot-gif/random_gif.gif', 'rb')
     response = twitter.upload_media(media=gif)
 
     if len(quote) > 70:
@@ -111,16 +112,19 @@ while True:
     if len(quote) == 0:
         quote = "..."
 
-    status = '"' + quote + '" ' + link + ' #starwarsgif'
+    status = '"' + quote + '" ' + '\n   - ' + title #+ link + ' #starwarsgif'
 
-    print "tweeting..."
+    print("tweeting...")
     try:
         twitter.update_status(status=status, media_ids=[response['media_id']])
     except:
         # error with twitter sleep a bit and try again
-        time.sleep(1800)
+        time.sleep(60)
         continue
+        # break
 
-    print "sleeping..."
+    # print("sleeping...")
     # sleep 1 hour
-    time.sleep(3600)
+    # time.sleep(10800)
+    print("Finished")
+    break

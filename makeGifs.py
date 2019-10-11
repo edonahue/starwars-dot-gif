@@ -14,7 +14,7 @@ from PIL import Image, ImageFont, ImageDraw
 
 # defaults
 
-CONFIG_FILE = "config.cfg"
+CONFIG_FILE = "/home/erich/nfs/starwars-dot-gif/config.cfg"
 PALLETSIZE = 256  # number of colors used in the gif, rounded to a power of two
 WIDTH = 512  # of the exports/gif, aspect ratio 2.35:1
 HEIGHT = 220  # of the exports/gif, aspect ratio 2.35:1
@@ -23,7 +23,7 @@ PADDING = [0]  # seconds to widen the capture-window
 DITHER = 2  # only every <dither> image will be used to generate the gif
 FRAMES = 0  # how many frames to export, 0 means as many as are available
 SCREENCAP_PATH = os.path.join(os.path.dirname(__file__), "screencaps")
-FONT_PATH = "fonts/DejaVuSansCondensed-BoldOblique.ttf"
+FONT_PATH = "/home/erich/nfs/starwars-dot-gif/fonts/DejaVuSansCondensed-BoldOblique.ttf"
 FONT_SIZE = 16
 
 
@@ -119,7 +119,7 @@ def drawText(draw, x, y, text, font):
 
 
 def makeGif(movie_slug, sub_index=[-1], custom_subtitle=[""], quote=True,
-            frames=0, filename="star_wars.gif", dither=DITHER,
+            frames=0, filename="/home/erich/nfs/starwars-dot-gif/random_gif.gif", dither=DITHER,
             padding=PADDING, palletsize=PALLETSIZE, width=WIDTH, height=HEIGHT,
             frame_duration=FRAME_DURATION, font_path=FONT_PATH,
             font_size=FONT_SIZE):
@@ -146,7 +146,7 @@ def makeGif(movie_slug, sub_index=[-1], custom_subtitle=[""], quote=True,
                         (default: {True})
         frames {int} -- Only export <frames> images to the gif (default: {0})
         filename {str} -- Name to safe the gif under
-                          (default: {"star_wars.gif"})
+                          (default: {"random_gif.gif"})
         dither {int} -- Every <dither> image is used in the gif (2 means every
                         second exported image is used) (default: {2})
         padding {[int]} -- Seconds to add at the end and beginning of the gif
@@ -385,7 +385,7 @@ def makeGif(movie_slug, sub_index=[-1], custom_subtitle=[""], quote=True,
     print('generated gif.')
     print('Used:\n{}'.format('\n'.join(meta)))
     print('done.')
-    return text
+    return [text, meta[0]]
 
 
 if __name__ == '__main__':
@@ -426,8 +426,8 @@ if __name__ == '__main__':
     parser.set_defaults(quote=True)
 
     parser.add_argument(
-        '--filename', type=str, nargs='?', default="star_wars.gif",
-        help='filename for the GIF (default: star_wars.gif)')
+        '--filename', type=str, nargs='?', default="random_gif.gif",
+        help='filename for the GIF (default: random_gif.gif)')
 
     parser.add_argument(
         '--palletsize', type=int, nargs='?', default=PALLETSIZE,

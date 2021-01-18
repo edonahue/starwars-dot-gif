@@ -119,7 +119,7 @@ while True:
         twitter.update_status(status=status, media_ids=[response['media_id']])
     except:
         # error with twitter sleep a bit and try again
-        time.sleep(60)
+        time.sleep(120)
         continue
         # break
 
